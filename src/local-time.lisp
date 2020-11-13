@@ -1867,6 +1867,7 @@ You can see examples in +ISO-8601-FORMAT+, +ASCTIME-FORMAT+, and +RFC-1123-FORMA
 (defun format-rfc3339-timestring (destination timestamp &key
                                   omit-date-part
                                   omit-time-part
+                                  use-nsec
                                   (omit-timezone-part omit-time-part)
                                   (use-zulu t)
                                   (timezone *default-timezone*))
@@ -1875,6 +1876,7 @@ You can see examples in +ISO-8601-FORMAT+, +ASCTIME-FORMAT+, and +RFC-1123-FORMA
          (if (and use-zulu
                   (not omit-date-part)
                   (not omit-time-part)
+                  (not use-nsec)
                   (not omit-timezone-part))
              +rfc3339-format+ ; micro optimization
              (append
@@ -1886,10 +1888,13 @@ You can see examples in +ISO-8601-FORMAT+, +ASCTIME-FORMAT+, and +RFC-1123-FORMA
                           omit-time-part)
                 '(#\T))
               (unless omit-time-part
-                '((:hour 2) #\:
-                  (:min 2) #\:
-                  (:sec 2) #\.
-                  (:usec 6)))
+                (append
+                 '((:hour 2) #\:
+                   (:min 2) #\:
+                   (:sec 2) #\.)
+                 (if use-nsec
+                     '((:nsec 9))
+                     '((:usec 6)))))
               (unless omit-timezone-part
                 (if use-zulu
                     '(:gmt-offset-or-z)

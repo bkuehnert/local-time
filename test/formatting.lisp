@@ -72,7 +72,13 @@
 
        "2009-W01-3"
        (format-timestring nil (encode-timestamp 0 0 0 0 31 12 2008)
-                          :format +iso-week-date-format+)))))
+                          :format +iso-week-date-format+)
+
+       "2008-12-31T00:00:00.123456Z"
+       (format-rfc3339-timestring nil (encode-timestamp 123456789 0 0 0 31 12 2008))
+
+       "2008-12-31T00:00:00.123456789Z"
+       (format-rfc3339-timestring nil (encode-timestamp 123456789 0 0 0 31 12 2008) :use-nsec t)))))
 
 (deftest test/formatting/format-timestring/2 ()
   (with-output-to-string (*standard-output*)
